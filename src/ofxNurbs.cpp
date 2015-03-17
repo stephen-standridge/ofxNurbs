@@ -2,14 +2,9 @@
 #include "homography.h"
 //http://www.glprogramming.com/red/chapter12.html
 
-/*
-GLfloat texpts[2][2][2] = {{{-1.0, -1.0}, {-1.0, 1.0}},
-    {{1.0, -1.0}, {1.0, 1.0}}};
-*/
 
 GLfloat texpts[2][2][2] = {{{0.0, 0.0}, {0.0, 1.0}},
     {{1.0, 0.0}, {1.0, 1.0}}};
-
 
 
 //--------------------------------------------------------------
@@ -55,14 +50,6 @@ void ofxNurbs::setup(ofPixels image, int u_points, int v_points){
     setPixelsRef( ofPtr<ofPixels>(new ofPixels) );
 }
 
-//---------------------------------------------------------------------------
-void ofxNurbs::setPixelsRef(ofPtr<ofPixels> pixels){
-    if(pix != NULL){
-        //Unload texture
-    }
-    pix = pixels;
-}
-
 //--------------------------------------------------------------
 void ofxNurbs::updateImage(ofPixels image){
     glBindTexture(GL_TEXTURE_2D, textures[0]);
@@ -75,124 +62,6 @@ void ofxNurbs::updateImage(ofPixels image){
 }
 
 //--------------------------------------------------------------
-void ofxNurbs::enableEditMode(){
-	ofRegisterMouseEvents(this);
-	editMode=true;
-}
-//--------------------------------------------------------------
-void ofxNurbs::disableEditMode(){
-	ofUnregisterMouseEvents(this);
-	editMode=false;
-}
-//--------------------------------------------------------------
-void ofxNurbs::toggleEditMode(){
-	editMode=!editMode;
-	if(editMode)
-		enableEditMode();
-	else
-		disableEditMode();
-}
-//--------------------------------------------------------------
-bool ofxNurbs::getEditMode(){
-	return editMode;
-}
-//--------------------------------------------------------------
-void ofxNurbs::end(){
-	glPopMatrix();
-}
-//--------------------------------------------------------------
-void ofxNurbs::save(string saveFile){
-	ofxXmlSettings XML;
-	XML.clear();
-	XML.addTag("corners");
-	XML.pushTag("corners");
-	
-	
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.setValue("corner:x",corners[i].x, t);
-		XML.setValue("corner:y",corners[i].y, t);
-	}
-	XML.saveFile(saveFile);
-}
-//--------------------------------------------------------------
-void ofxNurbs::load(string loadFile){
-	ofxXmlSettings XML;
-	if( !XML.loadFile(loadFile) ){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : xml file not loaded. Check file path.");
-	}
-	
-	if(!XML.tagExists("corners")){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
-		return;
-	}
-	XML.pushTag("corners");
-	if (XML.getNumTags("corner")<4 ) {
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
-		return;	
-	}
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.pushTag("corner", i);
-		if (XML.tagExists("x") && XML.tagExists("y")){
-			corners[i].x = XML.getValue("x", double(1.0));
-			corners[i].y = XML.getValue("y", double(1.0));
-		}
-		XML.popTag();
-	}
-
-	//UPDATE MESH
-	ofLog(OF_LOG_WARNING, "ofxGLWarper : xml file loaded OK!.");
-}
-//--------------------------------------------------------------
-void ofxNurbs::saveToXml(ofxXmlSettings &XML){
-	XML.clear();
-	XML.addTag("corners");
-	XML.pushTag("corners");
-	
-	
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.setValue("corner:x",corners[i].x, t);
-		XML.setValue("corner:y",corners[i].y, t);
-	}
-	XML.popTag();
-}
-//--------------------------------------------------------------
-void ofxNurbs::loadFromXml(ofxXmlSettings &XML){	
-	if(!XML.tagExists("corners")){
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
-		return;
-	}
-	XML.pushTag("corners");
-	if (XML.getNumTags("corner")<4 ) {
-		ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
-		return;
-	}
-	for(int i =0; i<4; i++){
-		int t = XML.addTag("corner");
-		XML.pushTag("corner", i);
-		if (XML.tagExists("x") && XML.tagExists("y")){
-			corners[i].x = XML.getValue("x", double(1.0));
-			corners[i].y = XML.getValue("y", double(1.0));
-		}
-		XML.popTag();
-	}
-	XML.popTag();
-
-	//UPDATE MESH
-	ofLog(OF_LOG_WARNING, "ofxGLWarper : xml object loaded OK!.");
-	
-}
-
-
-
-
-
-
-
-
-
 void ofxNurbs::draw(){
     
     ofVec3f translation((ofGetWidth()-width)*0.5,(ofGetHeight()-height)*0.5,0);
@@ -201,9 +70,6 @@ void ofxNurbs::draw(){
     ofPushMatrix();
     ofTranslate(translation);
     ofScale(scale.x, scale.y, scale.z);
-    
-    
-    ofPushMatrix();
     
     glMultMatrixf(quadWarpingT.getPtr());
     glEnable(GL_TEXTURE_2D);
@@ -214,23 +80,12 @@ void ofxNurbs::draw(){
     glDisable(GL_TEXTURE_2D);
     
     ofPopMatrix();
-    ofPopMatrix();
     
     
     if(editMode){
-        
         ofMatrix4x4 mat;
         mat.scale(scale.x, scale.y, scale.z);
         mat.translate(translation);
-        
-        
-        /*
-        ofMatrix4x4 mat;
-        mat.translate(ofVec3f(10,10,0));
-        mat.scale(2, 1, 1);
-        ofPoint v(1,1,1);
-        v = v*mat;
-        */
         drawCtlPoints(mat);
     }
     
@@ -239,8 +94,37 @@ void ofxNurbs::draw(){
 }
 
 //--------------------------------------------------------------
-void ofxNurbs::keyPressed(int key){
+void ofxNurbs::begin(){
+    //Not implemented yet
+}
 
+//--------------------------------------------------------------
+void ofxNurbs::end(){
+    //Not implemented yet
+    //glPopMatrix();
+}
+
+//---------------------------------------------------------------------------
+void ofxNurbs::setPixelsRef(ofPtr<ofPixels> pixels){
+    //Not implemented yet
+    
+    /*
+    if(pix != NULL){
+        //Unload texture
+    }
+    pix = pixels;
+     */
+}
+
+//---------------------------------------------------------------------------
+void ofxNurbs::reset(){
+    resetQuad();
+    resetMesh();
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::keyPressed(int key){
+    
     if(key=='e'){
         editMode=!editMode;
     }
@@ -248,8 +132,7 @@ void ofxNurbs::keyPressed(int key){
         editCorners=!editCorners;
     }
     else if(key=='r'){
-        resetQuad();
-        resetMesh();
+        reset();
     }
     else if(key==OF_KEY_RIGHT){
         editMeshSelection=((editMeshSelection+1)%(_u_points*_v_points));
@@ -318,6 +201,139 @@ void ofxNurbs::mouseDragged(ofMouseEventArgs &args){
 void ofxNurbs::mouseReleased(ofMouseEventArgs &args){
 }
 
+//--------------------------------------------------------------
+void ofxNurbs::save(string saveFile){
+    ofxXmlSettings XML;
+    XML.clear();
+    XML.addTag("corners");
+    XML.pushTag("corners");
+    
+    
+    for(int i =0; i<4; i++){
+        int t = XML.addTag("corner");
+        XML.setValue("corner:x",corners[i].x, t);
+        XML.setValue("corner:y",corners[i].y, t);
+    }
+    XML.saveFile(saveFile);
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::load(string loadFile){
+    ofxXmlSettings XML;
+    if( !XML.loadFile(loadFile) ){
+        ofLog(OF_LOG_ERROR, "ofxGLWarper : xml file not loaded. Check file path.");
+    }
+    
+    if(!XML.tagExists("corners")){
+        ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
+        return;
+    }
+    XML.pushTag("corners");
+    if (XML.getNumTags("corner")<4 ) {
+        ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
+        return;
+    }
+    for(int i =0; i<4; i++){
+        int t = XML.addTag("corner");
+        XML.pushTag("corner", i);
+        if (XML.tagExists("x") && XML.tagExists("y")){
+            corners[i].x = XML.getValue("x", double(1.0));
+            corners[i].y = XML.getValue("y", double(1.0));
+        }
+        XML.popTag();
+    }
+    
+    //UPDATE MESH
+    ofLog(OF_LOG_WARNING, "ofxGLWarper : xml file loaded OK!.");
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::saveToXml(ofxXmlSettings &XML){
+    XML.clear();
+    XML.addTag("corners");
+    XML.pushTag("corners");
+    
+    
+    for(int i =0; i<4; i++){
+        int t = XML.addTag("corner");
+        XML.setValue("corner:x",corners[i].x, t);
+        XML.setValue("corner:y",corners[i].y, t);
+    }
+    XML.popTag();
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::loadFromXml(ofxXmlSettings &XML){
+    if(!XML.tagExists("corners")){
+        ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. No \"corners\" tag found");
+        return;
+    }
+    XML.pushTag("corners");
+    if (XML.getNumTags("corner")<4 ) {
+        ofLog(OF_LOG_ERROR, "ofxGLWarper : incorrrect xml formating. less than 4 \"corner\" tags found");
+        return;
+    }
+    for(int i =0; i<4; i++){
+        int t = XML.addTag("corner");
+        XML.pushTag("corner", i);
+        if (XML.tagExists("x") && XML.tagExists("y")){
+            corners[i].x = XML.getValue("x", double(1.0));
+            corners[i].y = XML.getValue("y", double(1.0));
+        }
+        XML.popTag();
+    }
+    XML.popTag();
+    
+    //UPDATE MESH
+    ofLog(OF_LOG_WARNING, "ofxGLWarper : xml object loaded OK!.");
+    
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::enableEditMode(){
+	ofRegisterMouseEvents(this);
+	editMode=true;
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::disableEditMode(){
+	ofUnregisterMouseEvents(this);
+	editMode=false;
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::toggleEditMode(){
+	editMode=!editMode;
+	if(editMode)
+		enableEditMode();
+	else
+		disableEditMode();
+}
+
+//--------------------------------------------------------------
+bool ofxNurbs::getEditMode(){
+	return editMode;
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::setControlPoint(int index, ofPoint position){
+    //Not implemented yet
+}
+
+//--------------------------------------------------------------
+ofPoint ofxNurbs::getControlPoint(int index){
+    //Not implemented yet
+}
+
+//--------------------------------------------------------------
+void ofxNurbs::setCornerSensibility(float sensibility){
+    //Not implemented yet
+}
+
+//--------------------------------------------------------------
+float ofxNurbs::getCornerSensibility(){
+    //Not implemented yet
+}
 
 //--------------------------------------------------------------
 void ofxNurbs::drawCtlPoints(ofMatrix4x4& mat){
@@ -401,7 +417,6 @@ void ofxNurbs::updateMesh(){
 void ofxNurbs::resetMesh(){
     for (int u = 0; u < _u_points; u++) {
         for (int v = 0; v < _v_points; v++) {
-            //controlPoints[u][v].set(ofMap(u,0,_u_points-1,-1.0f,1.0f),ofMap(v,0,_v_points-1,-1.0f,1.0f),0.0f);
             controlPoints[u][v].set(ofMap(u,0,_u_points-1,0.0f,1.0f),ofMap(v,0,_v_points-1,0.0f,1.0f),0.0f);
         }
     }
@@ -427,17 +442,9 @@ void ofxNurbs::resetQuad(){
 
 //--------------------------------------------------------------
 ofPoint ofxNurbs::mouseToMesh(int x, int y){
-    /*
-    float xRatio=0.5*ofGetWidth()/width;
-    float yRatio=0.5*ofGetHeight()/height;
-    
-    return ofPoint(ofMap(x,0,ofGetWidth(),-xRatio,xRatio),ofMap(y,0,ofGetHeight(),-yRatio,yRatio));
-     */
     
     x = (float)x - (float)(ofGetWidth()-width)*0.5;
     y = (float)y - (float)(ofGetHeight()-height)*0.5;
-    
-    
     return ofPoint((float)x/width, (float)y/height);
 }
 

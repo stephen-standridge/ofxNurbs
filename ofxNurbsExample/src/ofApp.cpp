@@ -2,8 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    camWidth 		= 640;	// try to grab at this size.
-    camHeight 		= 360;
+    camWidth 		= 1280;	// try to grab at this size.
+    camHeight 		= 720;
     
     //we can now get back a list of devices.
     vector<ofVideoDevice> devices = vidGrabber.listDevices();
@@ -20,7 +20,7 @@ void ofApp::setup(){
     vidGrabber.setDeviceID(0);
     vidGrabber.initGrabber(camWidth,camHeight);
     
-    nurbs.setup(vidGrabber.getPixelsRef(),6,6);
+    nurbs.setup(vidGrabber.getPixelsRef(),10,10);
 }
 
 //--------------------------------------------------------------

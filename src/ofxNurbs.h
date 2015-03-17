@@ -18,10 +18,10 @@ public:
     void setup(ofPixels image, int u_points = 4, int v_points = 4);
     void updateImage(ofPixels image);
 	void draw();
-	void begin();
-	void end();
+	void begin();   //Not implemented yet
+	void end();     //Not implemented yet
     
-    void setPixelsRef(ofPtr<ofPixels> pixels);
+    void setPixelsRef(ofPtr<ofPixels> pixels);  //Not implemented yet
 
 	void reset();
     
@@ -41,15 +41,37 @@ public:
 	void toggleEditMode();
 	bool getEditMode();
     
-    void setControlPoint(int index, ofPoint position);
-    ofPoint getControlPoint(int index);
+    void setControlPoint(int index, ofPoint position);  //Not implemented yet
+    ofPoint getControlPoint(int index);                 //Not implemented yet
         
-    void setCornerSensibility(float sensibility);
-    float getCornerSensibility();
+    void setCornerSensibility(float sensibility);       //Not implemented yet
+    float getCornerSensibility();                       //Not implemented yet
 
 private:
+    int x, y;
+    int  width; //width of the quad to work with
+    int	 height; // height of the quad to work with
+    
+    ofPoint corners[4];
+    ofPoint src[4];
+    ofMatrix4x4 quadWarping;
+    ofMatrix4x4 quadWarpingT;
+    ofMatrix4x4 quadWarpingI;
+    
     int _u_points;
     int _v_points;
+    vector< vector<ofPoint> >  controlPoints;
+
+    GLuint textures[1];
+    
+    GLenum drawMode;
+    
+    bool editMode;
+    int editSelection;
+    bool editCorners;
+    int editMeshSelection;
+    int editQuadSelection;
+    
     
 	void drawCtlPoints(ofMatrix4x4& mat);
 
@@ -61,34 +83,5 @@ private:
 	ofPoint mouseToMesh(int x, int y);
     ofPoint meshToScreen(ofPoint meshPoint);
 
-	int x, y;
-	int  width; //width of the quad to work with
-	int	 height; // height of the quad to work with
-
-    /*
-    ofPoint controlPoints[OFXNURBS_U_POINTS][OFXNURBS_V_POINTS];
-    ofPoint controlPointsQW[OFXNURBS_U_POINTS][OFXNURBS_V_POINTS];
-	*/
-    vector< vector<ofPoint> >  controlPoints;
-    ofPoint corners[4];
-		
-	GLenum drawMode;
     ofPtr<ofPixels> pix;
-
-	GLuint textures[1];
-
-	bool editMode;
-	int editSelection;
-    bool editCorners;
-    int editMeshSelection;
-    int editQuadSelection;
-    
-    
-    ofPoint src[4];
-    
-    ofMatrix4x4 quadWarping;
-    ofMatrix4x4 quadWarpingT;
-    ofMatrix4x4 quadWarpingI;
-    
-    
 };
